@@ -86,3 +86,7 @@ Cross-browser notes:
   packages for both under `dist\`.
 - `background.js` is byte-identical in both packages; only the
   manifest differs.
+
+## License
+
+[MIT](LICENSE)
