@@ -19,7 +19,9 @@ folder; packages come from `build.ps1` → `dist\`.
    `marquee-1400x560.png`
 4. Privacy tab: single purpose, `storage` justification, "no data
    collected" — answers are in `listing.md`
-5. Set the support email; submit for review (typically 1–3 days)
+5. Set the support email: `untabit.extension@dudesoft.app` (CWS sends a
+   verification mail there — the mailbox/alias must exist and be
+   readable before this step); submit for review (typically 1–3 days)
 6. Note the **extension ID** from the dashboard URL — needed below
 
 ### API credentials (for automated publishing)

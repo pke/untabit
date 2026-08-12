@@ -16,4 +16,5 @@ Untabit requires no access to your browsing history, page contents, or
 any website data. Its single permission (`storage`) exists solely for
 the session bookkeeping described above.
 
-Questions: https://github.com/pke/untabit/issues
+Questions: untabit.extension@dudesoft.app or
+https://github.com/pke/untabit/issues
