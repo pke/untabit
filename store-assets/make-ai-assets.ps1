@@ -185,6 +185,13 @@ if (Test-Path (Split-Path $ogPath -Parent)) {
 }
 $bmp.Dispose()
 
+# GitHub repo social preview 1280x640
+$bmp, $g = New-CroppedCanvas 1280 640 $baseOut
+$g.FillRectangle($scrim, 0, 390, 1280, 250)
+Draw-CenteredText $g "Untabit" $fontXL 640 390
+Draw-CenteredText $g "Pop any tab into its own window - and back." $fontSub 640 555
+Save-Png $bmp $g "gh-social-1280x640.png"
+
 # marquee 1400x560
 $bmp, $g = New-CroppedCanvas 1400 560 $baseOut
 $g.FillRectangle($scrim, 0, 330, 1400, 230)
