@@ -27,13 +27,26 @@ folder; packages come from `build.ps1` → `dist\`.
 
 ### API credentials (for automated publishing)
 
-Follow https://developer.chrome.com/docs/webstore/using-api — creates a
-Google Cloud OAuth client and a refresh token. Then add repository
-secrets on GitHub (Settings → Secrets and variables → Actions):
+Base reference: https://developer.chrome.com/docs/webstore/using-api.
+Note the Cloud console never shows a refresh token — it must be
+obtained through an OAuth flow, easiest via the OAuth Playground:
 
-- `CWS_EXTENSION_ID` — from step 6
-- `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` — from the
-  OAuth setup
+1. Cloud console → APIs & Services → Credentials → OAuth client of type
+   **Web application** with authorized redirect URI
+   `https://developers.google.com/oauthplayground`
+2. OAuth consent screen: publishing status **In production** — while in
+   "Testing" status, refresh tokens expire after 7 days and the publish
+   workflow silently breaks. The "unverified app" warning during
+   authorization is expected (Advanced → continue).
+3. https://developers.google.com/oauthplayground → gear icon → "Use
+   your own OAuth credentials" → paste client id/secret → Step 1: scope
+   `https://www.googleapis.com/auth/chromewebstore` → Authorize APIs
+   (sign in with the CWS developer account) → Step 2: "Exchange
+   authorization code for tokens" → copy the **refresh token**
+4. Add the repository secrets (via `gh secret set <NAME> --repo
+   pke/untabit`, entered interactively — never in shell history):
+   `CWS_EXTENSION_ID`, `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`,
+   `CWS_REFRESH_TOKEN` — all four are set as of 2026-08-12.
 
 ## One-time: Firefox AMO
 
