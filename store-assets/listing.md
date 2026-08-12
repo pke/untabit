@@ -57,4 +57,7 @@ Ctrl+U (macOS) unchanged.
 | `marquee-1400x560.png` | CWS marquee promo tile |
 | `../icons/icon128.png` | Store icon (both stores) |
 
-Regenerate the images with `make-store-assets.ps1`.
+Regenerate the images with `make-ai-assets.ps1` (`-SkipGenerate` reuses
+the committed `ai-base-*.png` illustrations; without it, new artwork is
+generated via gpt-image-1 — API key required). Icon candidates:
+`make-ai-icon.ps1`; style exploration: `explore-variants.ps1`.
