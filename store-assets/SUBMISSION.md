@@ -22,7 +22,8 @@ folder; packages come from `build.ps1` → `dist\`.
 5. Set the support email: `untabit.extension@dudesoft.app` (CWS sends a
    verification mail there — the mailbox/alias must exist and be
    readable before this step); submit for review (typically 1–3 days)
-6. Note the **extension ID** from the dashboard URL — needed below
+6. The **extension ID** is `jfdejeecmmellhpmbcjkkmegegahifkh`
+   (listing: https://chromewebstore.google.com/detail/jfdejeecmmellhpmbcjkkmegegahifkh)
 
 ### API credentials (for automated publishing)
 
