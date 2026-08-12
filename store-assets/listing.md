@@ -2,7 +2,7 @@
 
 ## Chrome Web Store
 
-**Title:** Untabit — Move Tab to New Window
+**Title:** Untabit - Move Tab to New Window
 
 **Short description** (max 132 chars):
 

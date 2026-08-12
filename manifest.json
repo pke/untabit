@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Untabit — Move Tab to New Window",
+  "name": "Untabit - Move Tab to New Window",
   "version": "0.3.0",
   "description": "Untab it! Pop the current tab out into its own window — press again to merge it back where it came from. No page reload.",
   "permissions": ["storage"],
