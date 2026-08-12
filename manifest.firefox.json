@@ -28,7 +28,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "untabit@phil.kursawe.gmail.com",
+      "id": "untabit.extension@dudesoft.app",
       "strict_min_version": "115.0"
     }
   }
