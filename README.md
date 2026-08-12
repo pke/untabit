@@ -1,5 +1,10 @@
 # Untabit
 
+[![CI](https://github.com/pke/untabit/actions/workflows/ci.yml/badge.svg)](https://github.com/pke/untabit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/pke/untabit?color=7C3AED)](https://github.com/pke/untabit/releases)
+[![License: MIT](https://img.shields.io/github/license/pke/untabit?color=4F46E5)](LICENSE)
+[![Website](https://img.shields.io/badge/website-untabit.dudesoft.app-4F46E5)](https://untabit.dudesoft.app)
+
 **Untab it!** Pop the current tab out into its own window — press again to merge it back where it came from. Keyboard shortcut or toolbar icon.
 
 - **Toggle** — a tab with siblings pops out; a tab alone in its window merges back into the window it came from, at its old position. If that window is gone, it merges into the most recently focused other window.
