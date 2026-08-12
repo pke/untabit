@@ -68,6 +68,22 @@ https://addons.mozilla.org/developers/addon/api/key/ and add secrets:
 
 - `AMO_JWT_ISSUER`, `AMO_JWT_SECRET`
 
+## One-time: Microsoft Edge Add-ons
+
+1. Register at https://partner.microsoft.com/dashboard/microsoftedge/
+   (free; Microsoft account required)
+2. **Create new extension** → upload `dist\untabit-chromium.zip` (the
+   same package as Chrome)
+3. Fill the listing from `listing.md` (CWS texts fit Edge's fields),
+   upload the screenshots; privacy URL and support URL as on CWS
+4. Review typically takes a few days, up to a week
+
+### API credentials
+
+Partner Center → **Publish API** page → generate credentials, then add
+secrets: `EDGE_PRODUCT_ID` (shown on the extension's overview page),
+`EDGE_CLIENT_ID`, `EDGE_API_KEY`.
+
 ## Every release afterwards (automated)
 
 1. Bump `version` in **both** manifests, commit

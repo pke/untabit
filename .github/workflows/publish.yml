@@ -6,6 +6,8 @@
 #     CWS_EXTENSION_ID, CWS_CLIENT_ID, CWS_CLIENT_SECRET, CWS_REFRESH_TOKEN
 #   Firefox AMO (https://addons.mozilla.org/developers/addon/api/key/):
 #     AMO_JWT_ISSUER, AMO_JWT_SECRET
+#   Edge Add-ons (Partner Center -> Publish API):
+#     EDGE_PRODUCT_ID, EDGE_CLIENT_ID, EDGE_API_KEY
 name: Publish to stores
 
 on:
@@ -14,12 +16,12 @@ on:
       target:
         description: Store to publish to
         type: choice
-        options: [both, chrome-web-store, firefox-amo]
-        default: both
+        options: [all, chrome-web-store, firefox-amo, edge-addons]
+        default: all
 
 jobs:
   chrome-web-store:
-    if: inputs.target != 'firefox-amo'
+    if: inputs.target == 'all' || inputs.target == 'chrome-web-store'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +52,7 @@ jobs:
             "https://www.googleapis.com/chromewebstore/v1.1/items/$EXTENSION_ID/publish"
 
   firefox-amo:
-    if: inputs.target != 'chrome-web-store'
+    if: inputs.target == 'all' || inputs.target == 'firefox-amo'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -66,3 +68,36 @@ jobs:
             --channel listed \
             --api-key "${{ secrets.AMO_JWT_ISSUER }}" \
             --api-secret "${{ secrets.AMO_JWT_SECRET }}"
+
+  edge-addons:
+    if: inputs.target == 'all' || inputs.target == 'edge-addons'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build packages
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Upload and publish
+        env:
+          PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          API_KEY: ${{ secrets.EDGE_API_KEY }}
+        run: |
+          BASE="https://api.addons.microsoftedge.microsoft.com/v1/products/$PRODUCT_ID/submissions"
+          AUTH=(-H "Authorization: ApiKey $API_KEY" -H "X-ClientID: $CLIENT_ID")
+          OP=$(curl -sf "${AUTH[@]}" -H "Content-Type: application/zip" \
+            -T dist/untabit-chromium.zip -D - -o /dev/null \
+            "$BASE/draft/package" | tr -d '\r' | awk 'tolower($1)=="location:" {print $2}')
+          echo "package upload operation: $OP"
+          for i in $(seq 1 30); do
+            STATUS=$(curl -sf "${AUTH[@]}" "$BASE/draft/package/operations/$OP" | jq -r .status)
+            echo "upload status: $STATUS"
+            [ "$STATUS" = "Succeeded" ] && break
+            [ "$STATUS" = "Failed" ] && exit 1
+            sleep 10
+          done
+          [ "$STATUS" = "Succeeded" ] || { echo "timed out"; exit 1; }
+          curl -sf -X POST "${AUTH[@]}" -H "Content-Length: 0" "$BASE"
+          echo "submitted for review"
