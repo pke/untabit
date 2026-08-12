@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Untabit — Support</title>
+<meta name="description" content="Help for Untabit: shortcuts, rebinding, merge-back behavior, and how to report issues.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Untabit">
+<meta property="og:title" content="Untabit — Support">
+<meta property="og:description" content="Help for Untabit: shortcuts, rebinding, merge-back behavior, and how to report issues.">
+<meta property="og:url" content="https://untabit.dudesoft.app/support">
+<meta property="og:image" content="https://untabit.dudesoft.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="card hero">
+  <img src="icon.png" alt="Untabit icon">
+  <h1>Support</h1>
+  <p class="tagline">Answers first, contact below.</p>
+</div>
+<div class="card">
+  <h2>How do I use Untabit?</h2>
+  <p>
+    Press <kbd>Alt</kbd> + <kbd>U</kbd> (macOS: <kbd>Ctrl</kbd> +
+    <kbd>U</kbd>) or click the toolbar icon. A tab with siblings pops
+    out into its own window; a tab alone in its window merges back
+    where it came from, at its old position.
+  </p>
+
+  <h2>The shortcut doesn't work</h2>
+  <p>
+    Most likely another extension registered it first. Untabit shows a
+    red <strong>!</strong> badge on its toolbar icon when that happens —
+    click the badged icon and it takes you to the fix. You can rebind
+    the shortcut anytime: <code>chrome://extensions/shortcuts</code> in
+    Chrome/Brave/Edge, or in Firefox under about:addons → gear icon →
+    Manage Extension Shortcuts.
+  </p>
+
+  <h2>I don't see the toolbar icon</h2>
+  <p>
+    It may be tucked behind the puzzle-piece extensions menu. Open that
+    menu and pin Untabit to the toolbar.
+  </p>
+
+  <h2>Where does the tab go when I merge it back?</h2>
+  <p>
+    Back to the window it came from, at its old position. If that
+    window was closed in the meantime, it joins the window you used
+    most recently instead. Incognito/private tabs only ever merge into
+    matching windows.
+  </p>
+
+  <h2>Does the page reload when a tab moves?</h2>
+  <p>
+    No. The tab is moved, not reopened — video keeps playing, scroll
+    position and form state survive.
+  </p>
+
+  <h2>Report a bug or request a feature</h2>
+  <p>
+    Open an issue on
+    <a href="https://github.com/pke/untabit/issues">GitHub</a> — please
+    include your browser and version. For anything else:
+    <a href="mailto:phil.kursawe@gmail.com">phil.kursawe@gmail.com</a>
+  </p>
+</div>
+<footer>
+  <a href="./">Untabit</a> ·
+  <a href="privacy">Privacy</a> ·
+  <a href="https://github.com/pke/untabit">GitHub</a>
+</footer>
+</body>
+</html>
