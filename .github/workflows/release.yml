@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches manifest versions
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}".TrimStart("v")
+          foreach ($m in "manifest.json", "manifest.firefox.json") {
+            $v = (Get-Content $m -Raw | ConvertFrom-Json).version
+            if ($v -ne $tag) { throw "Tag $tag does not match version $v in $m" }
+          }
+
+      - name: Build packages
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Lint Firefox package
+        run: npx --yes web-ext lint --source-dir dist/firefox
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

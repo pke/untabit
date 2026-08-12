@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Untabit — set your keyboard shortcut</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    max-width: 40rem;
+    margin: 4rem auto;
+    padding: 0 1rem;
+    line-height: 1.6;
+    color: #1c1b22;
+    background: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { color: #fbfbfe; background: #2b2a33; }
+    kbd { background: #52525e; border-color: #6b6b76; }
+  }
+  h1 { font-size: 1.4rem; }
+  kbd {
+    background: #e0e0e6;
+    border: 1px solid #b1b1b9;
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.9em;
+  }
+  ol li { margin-bottom: 0.5rem; }
+  h1 { display: flex; align-items: center; gap: 0.6rem; }
+  h1 img { width: 40px; height: 40px; }
+  .toolbar-icon {
+    position: relative;
+    display: inline-block;
+    vertical-align: text-bottom;
+  }
+  .toolbar-icon img { width: 20px; height: 20px; display: block; }
+  .toolbar-icon .badge {
+    position: absolute;
+    right: -6px;
+    bottom: -4px;
+    background: #d93025;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<h1><img src="icons/icon48.png" alt="">Untabit couldn't register its keyboard shortcut</h1>
+<p>
+  The suggested shortcut (<kbd>Alt</kbd>+<kbd>U</kbd>, or
+  <kbd>Ctrl</kbd>+<kbd>U</kbd> on macOS) is most likely already taken by
+  another extension. You can assign a different one in a few clicks —
+  Firefox doesn't let extensions open this settings page for you:
+</p>
+<ol>
+  <li>Open <strong>about:addons</strong> (Menu → Add-ons and themes)</li>
+  <li>Click the <strong>gear icon ⚙</strong> at the top right of the Extensions page</li>
+  <li>Choose <strong>Manage Extension Shortcuts</strong></li>
+  <li>Find <strong>Untabit</strong> and press your preferred key combination</li>
+</ol>
+<p>
+  Until then, clicking the Untabit toolbar icon
+  <span class="toolbar-icon"><img src="icons/icon48.png" alt="Untabit icon"><span class="badge">!</span></span>
+  does the same thing as the shortcut: it pops the current tab out into
+  its own window, and merges it back when pressed again. The red
+  <strong>!</strong> badge disappears once you've seen this page. If you
+  don't see the icon, it may be hidden behind the puzzle-piece
+  extensions menu — pin it from there.
+</p>
+</body>
+</html>

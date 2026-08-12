@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Untabit",
+  "version": "0.3.0",
+  "description": "Untab it! Pop the current tab out into its own window — press again to merge it back where it came from. No page reload.",
+  "permissions": ["storage"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Untab it — pop this tab out, or merge it back"
+  },
+  "commands": {
+    "untab-it": {
+      "suggested_key": {
+        "default": "Alt+U",
+        "mac": "MacCtrl+U"
+      },
+      "description": "Pop the current tab out into its own window / merge it back"
+    }
+  }
+}

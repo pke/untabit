@@ -1,0 +1,68 @@
+# Publishes the built packages to the extension stores. Manual trigger only —
+# releasing to GitHub (release.yml) never pushes to stores by accident.
+#
+# Required repository secrets:
+#   Chrome Web Store (https://developer.chrome.com/docs/webstore/using-api):
+#     CWS_EXTENSION_ID, CWS_CLIENT_ID, CWS_CLIENT_SECRET, CWS_REFRESH_TOKEN
+#   Firefox AMO (https://addons.mozilla.org/developers/addon/api/key/):
+#     AMO_JWT_ISSUER, AMO_JWT_SECRET
+name: Publish to stores
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Store to publish to
+        type: choice
+        options: [both, chrome-web-store, firefox-amo]
+        default: both
+
+jobs:
+  chrome-web-store:
+    if: inputs.target != 'firefox-amo'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build packages
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Upload and publish
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        run: |
+          ACCESS_TOKEN=$(curl -sf -X POST https://oauth2.googleapis.com/token \
+            -d client_id="$CLIENT_ID" \
+            -d client_secret="$CLIENT_SECRET" \
+            -d refresh_token="$REFRESH_TOKEN" \
+            -d grant_type=refresh_token | jq -r .access_token)
+          curl -sf -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "x-goog-api-version: 2" \
+            -X PUT -T dist/untabit-chromium.zip \
+            "https://www.googleapis.com/upload/chromewebstore/v1.1/items/$EXTENSION_ID"
+          curl -sf -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "x-goog-api-version: 2" -H "Content-Length: 0" \
+            -X POST \
+            "https://www.googleapis.com/chromewebstore/v1.1/items/$EXTENSION_ID/publish"
+
+  firefox-amo:
+    if: inputs.target != 'chrome-web-store'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build packages
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Sign and submit to AMO
+        run: |
+          npx --yes web-ext sign \
+            --source-dir dist/firefox \
+            --channel listed \
+            --api-key "${{ secrets.AMO_JWT_ISSUER }}" \
+            --api-secret "${{ secrets.AMO_JWT_SECRET }}"

@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build packages
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Lint Firefox package
+        run: npx --yes web-ext lint --source-dir dist/firefox
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: untabit-packages
+          path: dist/*.zip
