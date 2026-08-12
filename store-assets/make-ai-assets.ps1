@@ -172,6 +172,19 @@ Draw-CenteredText $g "Untabit" $fontTitle 220 158
 Draw-CenteredText $g "Untab it - and back" $fontSmall 220 232
 Save-Png $bmp $g "promo-tile-440x280.png"
 
+# Open Graph share card 1200x630 (for the GitHub Pages site)
+$bmp, $g = New-CroppedCanvas 1200 630 $baseOut
+$g.FillRectangle($scrim, 0, 380, 1200, 250)
+Draw-CenteredText $g "Untabit" $fontXL 600 380
+Draw-CenteredText $g "Pop any tab into its own window - and back." $fontSub 600 545
+$g.Dispose()
+$ogPath = Join-Path (Split-Path $out -Parent) "docs\og-image.png"
+if (Test-Path (Split-Path $ogPath -Parent)) {
+    $bmp.Save($ogPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    Write-Host "wrote docs\og-image.png"
+}
+$bmp.Dispose()
+
 # marquee 1400x560
 $bmp, $g = New-CroppedCanvas 1400 560 $baseOut
 $g.FillRectangle($scrim, 0, 330, 1400, 230)
