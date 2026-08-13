@@ -84,6 +84,8 @@ kbd {
   background: rgba(255, 255, 255, 0.92);
   color: #4f46e5;
   font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.2;
   text-decoration: none;
   border-radius: 14px;
   padding: 0.7rem 1.4rem;
