@@ -23,7 +23,8 @@ folder; packages come from `build.ps1` → `dist\`.
    verification mail there — the mailbox/alias must exist and be
    readable before this step); submit for review (typically 1–3 days)
 6. The **extension ID** is `jfdejeecmmellhpmbcjkkmegegahifkh`
-   (listing: https://chromewebstore.google.com/detail/jfdejeecmmellhpmbcjkkmegegahifkh)
+7. Released 2026-08-13 — listing:
+   https://chromewebstore.google.com/detail/jfdejeecmmellhpmbcjkkmegegahifkh
 
 ### API credentials (for automated publishing)
 
