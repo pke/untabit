@@ -3,6 +3,7 @@
 [![CI](https://github.com/pke/untabit/actions/workflows/ci.yml/badge.svg)](https://github.com/pke/untabit/actions/workflows/ci.yml)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/jfdejeecmmellhpmbcjkkmegegahifkh?color=4F46E5&label=chrome%20web%20store)](https://chromewebstore.google.com/detail/jfdejeecmmellhpmbcjkkmegegahifkh)
 [![Chrome Web Store users](https://img.shields.io/chrome-web-store/users/jfdejeecmmellhpmbcjkkmegegahifkh?color=7C3AED)](https://chromewebstore.google.com/detail/jfdejeecmmellhpmbcjkkmegegahifkh)
+[![Edge Add-ons](https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbedgnmhhpimjplapildaojdjfhhpgnpi&color=4F46E5)](https://microsoftedge.microsoft.com/addons/detail/bedgnmhhpimjplapildaojdjfhhpgnpi)
 [![Release](https://img.shields.io/github/v/release/pke/untabit?color=7C3AED)](https://github.com/pke/untabit/releases)
 [![License: MIT](https://img.shields.io/github/license/pke/untabit?color=4F46E5)](LICENSE)
 [![Website](https://img.shields.io/badge/website-untabit.dudesoft.app-4F46E5)](https://untabit.dudesoft.app)

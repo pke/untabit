@@ -77,6 +77,8 @@ https://addons.mozilla.org/developers/addon/api/key/ and add secrets:
 3. Fill the listing from `listing.md` (CWS texts fit Edge's fields),
    upload the screenshots; privacy URL and support URL as on CWS
 4. Review typically takes a few days, up to a week
+5. Released 2026-08-13 — listing:
+   https://microsoftedge.microsoft.com/addons/detail/bedgnmhhpimjplapildaojdjfhhpgnpi
 
 ### API credentials
 
