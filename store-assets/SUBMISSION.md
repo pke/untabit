@@ -62,6 +62,9 @@ obtained through an OAuth flow, easiest via the OAuth Playground:
 The extension ID `untabit.extension@dudesoft.app` is fixed by the
 manifest and becomes permanent with this first submission.
 
+Released 2026-08-15:
+https://addons.mozilla.org/firefox/addon/untabit/
+
 ### API credentials
 
 Generate JWT credentials at
