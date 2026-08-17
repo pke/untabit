@@ -106,7 +106,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          BASE="https://api.addons.microsoftedge.microsoft.com/v1.1/products/$PRODUCT_ID/submissions"
+          BASE="https://api.addons.microsoftedge.microsoft.com/v1/products/$PRODUCT_ID/submissions"
           AUTH=(-H "Authorization: ApiKey $API_KEY" -H "X-ClientID: $CLIENT_ID")
 
           wait_for_operation() {
