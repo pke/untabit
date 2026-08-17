@@ -64,11 +64,10 @@ self-distributed/unlisted extensions).
 - **Release** (`release.yml`): pushing a tag `vX.Y.Z` verifies the tag
   matches the version in both manifests, builds, and attaches the two
   zips to a GitHub release.
-- **Publish** (`publish.yml`): manual trigger (Actions → "Publish to
-  stores" → Run workflow) uploads to the Chrome Web Store and/or Firefox
-  AMO. Store credentials are configured as repository secrets — the
-  required names and where to obtain them are documented at the top of
-  the workflow file.
+- **Publish** (`publish.yml`): the same version tag automatically
+  submits to Chrome Web Store, Firefox AMO, and Edge Add-ons. Manual
+  dispatch remains available for retrying all stores or one store.
+  Credentials are configured as repository secrets.
 
 Store listing copy and promo images live in `store-assets/`
 (regenerate images with `store-assets\make-store-assets.ps1`).

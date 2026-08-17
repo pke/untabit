@@ -1,5 +1,5 @@
-# Publishes the built packages to the extension stores. Manual trigger only —
-# releasing to GitHub (release.yml) never pushes to stores by accident.
+# Publishes release tags to all extension stores automatically.
+# Manual dispatch remains available for retrying all stores or one store.
 #
 # Required repository secrets:
 #   Chrome Web Store (https://developer.chrome.com/docs/webstore/using-api):
@@ -11,6 +11,8 @@
 name: Publish to stores
 
 on:
+  push:
+    tags: ["v*"]
   workflow_dispatch:
     inputs:
       target:
@@ -20,8 +22,23 @@ on:
         default: all
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches manifest versions
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}".TrimStart("v")
+          foreach ($m in "manifest.json", "manifest.firefox.json") {
+            $v = (Get-Content $m -Raw | ConvertFrom-Json).version
+            if ($v -ne $tag) { throw "Tag $tag does not match version $v in $m" }
+          }
   chrome-web-store:
-    if: inputs.target == 'all' || inputs.target == 'chrome-web-store'
+    needs: validate
+    if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'chrome-web-store'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +69,8 @@ jobs:
             "https://www.googleapis.com/chromewebstore/v1.1/items/$EXTENSION_ID/publish"
 
   firefox-amo:
-    if: inputs.target == 'all' || inputs.target == 'firefox-amo'
+    needs: validate
+    if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'firefox-amo'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +88,8 @@ jobs:
             --api-secret "${{ secrets.AMO_JWT_SECRET }}"
 
   edge-addons:
-    if: inputs.target == 'all' || inputs.target == 'edge-addons'
+    needs: validate
+    if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'edge-addons'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -85,19 +104,63 @@ jobs:
           CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           API_KEY: ${{ secrets.EDGE_API_KEY }}
         run: |
-          BASE="https://api.addons.microsoftedge.microsoft.com/v1/products/$PRODUCT_ID/submissions"
+          set -euo pipefail
+
+          BASE="https://api.addons.microsoftedge.microsoft.com/v1.1/products/$PRODUCT_ID/submissions"
           AUTH=(-H "Authorization: ApiKey $API_KEY" -H "X-ClientID: $CLIENT_ID")
-          OP=$(curl -sf "${AUTH[@]}" -H "Content-Type: application/zip" \
-            -T dist/untabit-chromium.zip -D - -o /dev/null \
-            "$BASE/draft/package" | tr -d '\r' | awk 'tolower($1)=="location:" {print $2}')
-          echo "package upload operation: $OP"
-          for i in $(seq 1 30); do
-            STATUS=$(curl -sf "${AUTH[@]}" "$BASE/draft/package/operations/$OP" | jq -r .status)
-            echo "upload status: $STATUS"
-            [ "$STATUS" = "Succeeded" ] && break
-            [ "$STATUS" = "Failed" ] && exit 1
-            sleep 10
-          done
-          [ "$STATUS" = "Succeeded" ] || { echo "timed out"; exit 1; }
-          curl -sf -X POST "${AUTH[@]}" -H "Content-Length: 0" "$BASE"
+
+          wait_for_operation() {
+            local url="$1"
+            local label="$2"
+            local response status
+            for _ in $(seq 1 30); do
+              response=$(curl -fsS "${AUTH[@]}" "$url")
+              status=$(jq -r '.status // empty' <<<"$response")
+              echo "$label status: $status"
+              case "$status" in
+                Succeeded) return 0 ;;
+                Failed)
+                  jq . <<<"$response"
+                  return 1
+                  ;;
+              esac
+              sleep 10
+            done
+            echo "$label timed out"
+            return 1
+          }
+
+          headers=$(mktemp)
+          body=$(mktemp)
+          trap 'rm -f "$headers" "$body"' EXIT
+
+          http_code=$(curl -sS -o "$body" -D "$headers" -w "%{http_code}" \
+            -X POST "${AUTH[@]}" -H "Content-Type: application/zip" \
+            -T dist/untabit-chromium.zip "$BASE/draft/package")
+          if [ "$http_code" != "202" ]; then
+            echo "Edge package upload failed with HTTP $http_code"
+            cat "$body"
+            exit 1
+          fi
+
+          operation_id=$(awk 'BEGIN { IGNORECASE=1 } /^location:/ { gsub("\r", "", $2); print $2 }' "$headers")
+          [ -n "$operation_id" ] || { echo "Edge upload response had no Location header"; exit 1; }
+          echo "package upload operation: $operation_id"
+          wait_for_operation "$BASE/draft/package/operations/$operation_id" "upload"
+
+          : > "$headers"
+          : > "$body"
+          http_code=$(curl -sS -o "$body" -D "$headers" -w "%{http_code}" \
+            -X POST "${AUTH[@]}" -H "Content-Type: text/plain" \
+            --data "Automated Untabit release ${{ github.ref_name }}" "$BASE")
+          if [ "$http_code" != "202" ]; then
+            echo "Edge submission failed with HTTP $http_code"
+            cat "$body"
+            exit 1
+          fi
+
+          operation_id=$(awk 'BEGIN { IGNORECASE=1 } /^location:/ { gsub("\r", "", $2); print $2 }' "$headers")
+          [ -n "$operation_id" ] || { echo "Edge publish response had no Location header"; exit 1; }
+          echo "publish operation: $operation_id"
+          wait_for_operation "$BASE/operations/$operation_id" "publish"
           echo "submitted for review"

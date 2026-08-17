@@ -93,13 +93,12 @@ secrets: `EDGE_PRODUCT_ID` (shown on the extension's overview page),
 ## Every release afterwards (automated)
 
 1. Bump `version` in **both** manifests, commit
-2. Tag and push: `git tag v0.4.0 && git push --tags`
+2. Create and push a signed tag: `git tag -s v0.4.0 && git push --tags`
    → the Release workflow builds and attaches the zips to a GitHub
-   release (tag must match the manifest versions or it fails)
-3. GitHub → Actions → **Publish to stores** → Run workflow (choose
-   both / chrome-web-store / firefox-amo)
-   → uploads the new version to the stores; store review happens on
-   their side, no dashboard visit needed
+   release, while Publish to stores submits the same version to Chrome,
+   Firefox, and Edge (the tag must match both manifests)
+3. For a retry, run **Publish to stores** manually and select all stores
+   or one specific store
 
 Listing *content* changes (new screenshots, new description) remain
 dashboard-only on Chrome; on AMO most text fields can also be edited
