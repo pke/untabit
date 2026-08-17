@@ -86,6 +86,25 @@ async function toggle() {
   }
 }
 
+// Browser state can change between querying a tab and moving it. Serialize
+// toggle requests so rapid shortcut presses cannot race each other, and treat
+// a tab/window disappearing during the operation as a harmless cancellation.
+let toggleQueue = Promise.resolve();
+
+function isMissingBrowserObject(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /No (tab|window) with id|Invalid tab ID|Invalid window ID/i.test(message);
+}
+
+function queueToggle() {
+  toggleQueue = toggleQueue.then(toggle).catch((error) => {
+    if (!isMissingBrowserObject(error)) {
+      console.error("Untabit toggle failed:", error);
+    }
+  });
+  return toggleQueue;
+}
+
 // If the suggested shortcut couldn't be registered (usually claimed by
 // another extension first), flag it with a badge on the toolbar icon.
 // The next icon click then leads to the fix instead of toggling.
@@ -110,7 +129,7 @@ api.runtime.onInstalled.addListener(checkShortcut);
 api.runtime.onStartup.addListener(checkShortcut);
 
 api.commands.onCommand.addListener((command) => {
-  if (command === "untab-it") toggle();
+  if (command === "untab-it") queueToggle();
 });
 
 api.action.onClicked.addListener(async () => {
@@ -127,7 +146,7 @@ api.action.onClicked.addListener(async () => {
     await api.tabs.create({ url });
     return;
   }
-  toggle();
+  await queueToggle();
 });
 
 // Track window focus order so "merge back" has a sensible fallback when
