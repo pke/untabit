@@ -105,6 +105,24 @@ function queueToggle() {
   return toggleQueue;
 }
 
+// Chrome can stop or replace an MV3 worker while an extension API response is
+// in flight. Attach a rejection handler at every event boundary so that this
+// Chromium lifecycle race does not become an uncaught extension error.
+function isServiceWorkerGone(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message === "No SW";
+}
+
+function runEventTask(label, task) {
+  Promise.resolve()
+    .then(task)
+    .catch((error) => {
+      if (!isServiceWorkerGone(error)) {
+        console.error(`Untabit ${label} failed:`, error);
+      }
+    });
+}
+
 // If the suggested shortcut couldn't be registered (usually claimed by
 // another extension first), flag it with a badge on the toolbar icon.
 // The next icon click then leads to the fix instead of toggling.
@@ -125,14 +143,14 @@ async function clearShortcutWarning() {
   await api.action.setTitle({ title: DEFAULT_TITLE });
 }
 
-api.runtime.onInstalled.addListener(checkShortcut);
-api.runtime.onStartup.addListener(checkShortcut);
+api.runtime.onInstalled.addListener(() => runEventTask("install shortcut check", checkShortcut));
+api.runtime.onStartup.addListener(() => runEventTask("startup shortcut check", checkShortcut));
 
 api.commands.onCommand.addListener((command) => {
   if (command === "untab-it") queueToggle();
 });
 
-api.action.onClicked.addListener(async () => {
+async function handleActionClick() {
   // The badge doubles as the state flag — it survives service worker
   // suspension without needing storage.
   const badge = await api.action.getBadgeText({});
@@ -147,11 +165,15 @@ api.action.onClicked.addListener(async () => {
     return;
   }
   await queueToggle();
-});
+}
+
+api.action.onClicked.addListener(() =>
+  runEventTask("toolbar action", handleActionClick)
+);
 
 // Track window focus order so "merge back" has a sensible fallback when
 // the origin window no longer exists.
-api.windows.onFocusChanged.addListener(async (windowId) => {
+async function recordWindowFocus(windowId) {
   if (windowId === api.windows.WINDOW_ID_NONE) return;
   try {
     const w = await api.windows.get(windowId);
@@ -162,9 +184,15 @@ api.windows.onFocusChanged.addListener(async (windowId) => {
   const { focusHistory = [] } = await api.storage.session.get("focusHistory");
   const next = [windowId, ...focusHistory.filter((id) => id !== windowId)].slice(0, 10);
   await api.storage.session.set({ focusHistory: next });
-});
+}
+
+api.windows.onFocusChanged.addListener((windowId) =>
+  runEventTask("window focus tracking", () => recordWindowFocus(windowId))
+);
 
 // Drop the origin record when its tab closes.
-api.tabs.onRemoved.addListener((tabId) => {
-  api.storage.session.remove(originKey(tabId));
-});
+api.tabs.onRemoved.addListener((tabId) =>
+  runEventTask("closed-tab cleanup", () =>
+    api.storage.session.remove(originKey(tabId))
+  )
+);
