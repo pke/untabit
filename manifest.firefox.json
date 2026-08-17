@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Untabit",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Untab it! Pop the current tab out into its own window — press again to merge it back where it came from. No page reload.",
   "permissions": ["storage"],
   "icons": {
