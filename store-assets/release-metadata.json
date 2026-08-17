@@ -1,0 +1,7 @@
+{
+  "version": "0.3.1",
+  "release_notes": {
+    "en-US": "Fixed rare errors when a tab closes or moves during an Untabit operation. Rapid shortcut presses are now processed sequentially. Improved reliability during Chrome service-worker restarts."
+  },
+  "approval_notes": "Reliability-only update. Serializes tab toggle operations, treats disappearing tabs and windows as harmless cancellation, and handles Chromium MV3 service-worker shutdown races."
+}

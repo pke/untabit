@@ -62,7 +62,7 @@ self-distributed/unlisted extensions).
 - **CI** (`.github/workflows/ci.yml`): every push/PR builds both packages
   and lints the Firefox one with `web-ext`.
 - **Release** (`release.yml`): pushing a tag `vX.Y.Z` verifies the tag
-  matches the version in both manifests, builds, and attaches the two
+  matches both manifests and the release metadata, builds, and attaches the two
   zips to a GitHub release.
 - **Publish** (`publish.yml`): the same version tag automatically
   submits to Chrome Web Store, Firefox AMO, and Edge Add-ons. Manual
@@ -71,6 +71,10 @@ self-distributed/unlisted extensions).
 
 Store listing copy and promo images live in `store-assets/`
 (regenerate images with `store-assets\make-store-assets.ps1`).
+Release history is maintained in [CHANGELOG.md](CHANGELOG.md). For each release,
+update `store-assets/release-metadata.json`; its notes are sent to Firefox AMO
+and its certification notes to Edge. The **Update AMO release notes** workflow
+can patch the metadata of an already submitted Firefox version.
 
 ## How it works
 

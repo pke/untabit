@@ -27,14 +27,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check tag matches manifest versions
-        if: github.event_name == 'push'
+      - name: Check release metadata and versions
         shell: pwsh
         run: |
-          $tag = "${{ github.ref_name }}".TrimStart("v")
-          foreach ($m in "manifest.json", "manifest.firefox.json") {
-            $v = (Get-Content $m -Raw | ConvertFrom-Json).version
-            if ($v -ne $tag) { throw "Tag $tag does not match version $v in $m" }
+          $versions = @(
+            (Get-Content manifest.json -Raw | ConvertFrom-Json).version
+            (Get-Content manifest.firefox.json -Raw | ConvertFrom-Json).version
+            (Get-Content store-assets/release-metadata.json -Raw | ConvertFrom-Json).version
+          )
+          if (($versions | Select-Object -Unique).Count -ne 1) {
+            throw "Manifest and release metadata versions differ: $($versions -join ', ')"
+          }
+          if ("${{ github.event_name }}" -eq "push") {
+            $tag = "${{ github.ref_name }}".TrimStart("v")
+            if ($versions[0] -ne $tag) {
+              throw "Tag $tag does not match release version $($versions[0])"
+            }
           }
   chrome-web-store:
     needs: validate
@@ -81,11 +89,8 @@ jobs:
 
       - name: Sign and submit to AMO
         run: |
-          npx --yes web-ext sign \
-            --source-dir dist/firefox \
-            --channel listed \
-            --api-key "${{ secrets.AMO_JWT_ISSUER }}" \
-            --api-secret "${{ secrets.AMO_JWT_SECRET }}"
+          jq '{version: {release_notes: .release_notes, approval_notes: .approval_notes}}' store-assets/release-metadata.json > /tmp/amo-metadata.json
+          npx --yes web-ext sign --source-dir dist/firefox --channel listed --amo-metadata /tmp/amo-metadata.json --api-key "${{ secrets.AMO_JWT_ISSUER }}" --api-secret "${{ secrets.AMO_JWT_SECRET }}"
 
   edge-addons:
     needs: validate
@@ -152,7 +157,7 @@ jobs:
           : > "$body"
           http_code=$(curl -sS -o "$body" -D "$headers" -w "%{http_code}" \
             -X POST "${AUTH[@]}" -H "Content-Type: text/plain" \
-            --data "Automated Untabit release ${{ github.ref_name }}" "$BASE")
+            --data-binary "$(jq -r '.release_notes["en-US"]' store-assets/release-metadata.json)" "$BASE")
           if [ "$http_code" != "202" ]; then
             echo "Edge submission failed with HTTP $http_code"
             cat "$body"
