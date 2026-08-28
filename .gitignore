@@ -1,4 +1,5 @@
 dist/
 web-ext-artifacts/
+.env
 store-assets/variants/
 store-assets/icon-candidates/
